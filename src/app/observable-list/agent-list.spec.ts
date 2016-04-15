@@ -16,19 +16,18 @@ describe('AgentList', () => {
     });
 
     function testForAgentLoad(id:number, expectedAgents:Agent[]){
-      let agentList:AgentList = new AgentList(id);
+      let agentList:AgentList = new AgentList();
       
       let agentsSubscription = agentList.agents$.subscribe(
         agents => callback(agents)
       )
       
-      agentList.loadAgents();
+      agentList.loadAgents(id);
       expect(callback).toHaveBeenCalledWith(expectedAgents);
       
       agentsSubscription.unsubscribe();
     }  
   });
-  
   
   describe('addAgent', () => {
     it('adds an agent to the list', () => {
@@ -38,7 +37,6 @@ describe('AgentList', () => {
         agents => callback(agents)
       )
       
-      agentList.loadAgents();
       agentList.addAgent({name: 'Terrarra'});
       expect(callback).toHaveBeenCalledWith([{name: 'Solarra'}, {name: 'Lunarra'}, {name:'Terrarra'}]);
       
@@ -54,7 +52,6 @@ describe('AgentList', () => {
         agents => callback(agents)
       )
       
-      agentList.loadAgents();
       agentList.removeAgent('Solarra');
       expect(callback).toHaveBeenCalledWith([{name: 'Lunarra'}]);
       

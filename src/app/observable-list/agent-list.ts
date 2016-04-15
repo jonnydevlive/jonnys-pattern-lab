@@ -1,10 +1,8 @@
-import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/Rx';
 import {Observable} from 'rxjs/Observable';
 
 export class AgentList{
-  agents$:Observable<any[]>;
-  
-  private _agentsUpdatedSource:Subject<any[]>;
+  agents$:BehaviorSubject<Agent[]>;
   private _deityId:number;
   private _agents: Agent[];
   
@@ -14,20 +12,19 @@ export class AgentList{
     3: [{name: 'Victoria'}, {name:'Arthur'}]
   }
 
-  constructor(deityId:number){
-    this._deityId = deityId;
-    this._agentsUpdatedSource = new Subject<any[]>();
-    this.agents$ = this._agentsUpdatedSource.asObservable();
+  constructor(deityId?:number){
+    this._agents = deityId === undefined ? [] : this._agentsByDeity[deityId];
+    this.agents$ = new BehaviorSubject(this._agents);
   }
   
-  loadAgents():void{
-    this._agents = this._agentsByDeity[this._deityId];
-    this._agentsUpdatedSource.next(this._agents);
+  loadAgents(deityId:number):void{
+    this._agents = this._agentsByDeity[deityId];
+    this.agents$.next(this._agents);
   }
   
   addAgent(agent:Agent):void{
     this._agents.push(agent);
-    this._agentsUpdatedSource.next(this._agents);
+    this.agents$.next(this._agents);
   }
   
   removeAgent(agentName:string):void{
@@ -42,7 +39,7 @@ export class AgentList{
       this._agents.splice(index, 1);
     }
     
-    this._agentsUpdatedSource.next(this._agents);
+    this.agents$.next(this._agents);
   }
 }
 
